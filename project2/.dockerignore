@@ -1,0 +1,6 @@
+*tar.gz
+src/normal_web_server
+*.out
+./create_submission.sh
+.gitignore
+README*
