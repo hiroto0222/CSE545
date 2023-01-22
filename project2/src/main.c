@@ -11,6 +11,7 @@ int port = 0;
 int rsock, wsock;
 
 void client_accept(struct sockaddr_in addr);
+void SIGINT_handler(int signal_num);
 
 int main(int argc, char *argv[])
 {
@@ -30,6 +31,9 @@ int main(int argc, char *argv[])
     fprintf(stderr, "Error. Cannot make socket\n");
     exit(1);
   }
+
+  // handle ctrl + c
+  signal(SIGINT, SIGINT_handler);
 
   // create server address
   struct sockaddr_in addr;
@@ -107,4 +111,12 @@ void client_accept(struct sockaddr_in addr)
     memset(response, 0, sizeof(response));
     memset(response_header, 0, sizeof(response_header));
   }
+}
+
+void SIGINT_handler(int signal_num)
+{
+  // release port
+  close(rsock);
+  shutdown(rsock, 2);
+  exit(0);
 }
