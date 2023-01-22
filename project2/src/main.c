@@ -12,6 +12,7 @@ int rsock, wsock;
 
 void client_accept(struct sockaddr_in addr);
 void SIGINT_handler(int signal_num);
+void urldecode(char *dst, const char *src);
 
 int main(int argc, char *argv[])
 {
@@ -80,16 +81,16 @@ void client_accept(struct sockaddr_in addr)
                                     "Accept-Ranges: bytes\n"
                                     "Connection: close\n"
                                     "\n";
-  char *get_request = "GET";
-
-  // to check for proper req
+  // to check for proper reqs
   char *precmd = "GET";
   char *postcmd = "HTTP/1.1";
 
   // accept incoming connections
   while (1)
   {
+    char *buffer = (char *)malloc(1 * sizeof(char));
     int len_addr = sizeof(addr);
+
     wsock = accept(rsock, (struct sockaddr *)&addr, &len_addr);
     if (wsock < 0)
     {
@@ -103,6 +104,7 @@ void client_accept(struct sockaddr_in addr)
     read(wsock, buff, 1000);
     printf("%s\n", buff);
 
+    unsigned int size = 0;
     char *response = NULL;
     char *cmd;
     char command_result[1000];
@@ -112,7 +114,7 @@ void client_accept(struct sockaddr_in addr)
     if ((strstr(buff, precmd) == NULL) || (strstr(buff, postcmd) == NULL))
     {
       strcpy(response_header, not_found_response_header);
-      strcpy(command_result, "Invalid request, only GET is allowed.");
+      strcpy(command_result, "Invalid request, only GET is allowed!");
     }
     // send 200 OK
     else
@@ -127,18 +129,52 @@ void client_accept(struct sockaddr_in addr)
       if (strstr(decoded_cmd, "/exec/") == NULL)
       {
         strcpy(response_header, not_found_response_header);
-        strcpy(command_result, "Invalid command");
+        strcpy(command_result, "Invalid command!");
       }
       else
       {
         printf("cmd to exec: %s\n", decoded_cmd);
 
-        strcpy(response_header, ok_response_header);
+        size = strlen(ok_response_header);
+        strcat(buffer = realloc(buffer, size), ok_response_header);
+        strcat(decoded_cmd, " 2>&1");
+
+        char temp_buff[1000];
+        FILE *file = popen(decoded_cmd + 6, "r");
+        if (file == NULL)
+        {
+          strcpy(response_header, not_found_response_header);
+          strcpy(command_result, "Invalid command!");
+        }
+        else
+        {
+          int iters = 0;
+          while (fgets(temp_buff, sizeof(temp_buff), file) != NULL)
+          {
+            if (iters == 0)
+            {
+              strcpy(command_result, temp_buff);
+              iters++;
+            }
+            else
+            {
+              strcat(command_result, temp_buff);
+            }
+          }
+          strcpy(response_header, ok_response_header);
+        }
+        if (pclose(file) != 0)
+        {
+          strcpy(response_header, not_found_response_header);
+          file = NULL;
+        }
+        memset(temp_buff, 0, sizeof(temp_buff));
       }
     }
 
-    response = malloc(strlen(response_header) + 10);
+    response = malloc(strlen(response_header) + strlen(command_result) + 10);
     strcpy(response, response_header);
+    strcat(response, command_result);
 
     send(wsock, response, strlen(response), 0);
     close(wsock);
@@ -148,6 +184,7 @@ void client_accept(struct sockaddr_in addr)
     memset(buff, 0, sizeof(buff));
     memset(url, 0, sizeof(url));
     memset(response, 0, sizeof(response));
+    memset(command_result, 0, sizeof(command_result));
     memset(response_header, 0, sizeof(response_header));
   }
 }
@@ -161,7 +198,7 @@ void SIGINT_handler(int signal_num)
   exit(0);
 }
 
-/* decode url */
+/* decode url, code snippet -> https://stackoverflow.com/questions/2673207/c-c-url-decode-library */
 void urldecode(char *dst, const char *src)
 {
   char a, b;

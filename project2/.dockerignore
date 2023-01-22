@@ -4,3 +4,4 @@ src/normal_web_server
 ./create_submission.sh
 .gitignore
 README*
+.DS_Store
