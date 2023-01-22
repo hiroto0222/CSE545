@@ -10,6 +10,8 @@
 int port = 0;
 int rsock, wsock;
 
+void client_accept(struct sockaddr_in addr);
+
 int main(int argc, char *argv[])
 {
   // check if port number was passed on execution
@@ -56,12 +58,53 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  // send message
-  write(wsock, "HTTP1.1 200 OK", 14);
-
-  // close tcp connection
-  close(wsock);
-  close(rsock);
+  // accept incoming connections
+  client_accept(addr);
 
   return 0;
+}
+
+void client_accept(struct sockaddr_in addr)
+{
+  char *ok_response_header = "HTTP/1.1 200 OK\n"
+                             "Content-Type: text/html\n"
+                             "Accept-Ranges: bytes\n"
+                             "Connection: close\n"
+                             "\n";
+  char *not_found_response_header = "HTTP/1.1 404 NOTFOUND\n"
+                                    "Content-Type: text/html\n"
+                                    "Accept-Ranges: bytes\n"
+                                    "Connection: close\n"
+                                    "\n";
+  char *get_request = "GET";
+
+  // accept incoming connections
+  while (1)
+  {
+    int len_addr = sizeof(addr);
+    wsock = accept(rsock, (struct sockaddr *)&addr, &len_addr);
+
+    char buff[1000];
+    char url[1000];
+
+    read(wsock, buff, 1000);
+    printf("%s\n", buff);
+
+    char *response = NULL;
+    char response_header[1000];
+    strcpy(response_header, ok_response_header);
+
+    response = malloc(strlen(response_header) + 10);
+    strcpy(response, response_header);
+
+    send(wsock, response, strlen(response), 0);
+    close(wsock);
+    printf("Message sent: \n%s\n", response);
+
+    // clear buffers
+    memset(buff, 0, sizeof(buff));
+    memset(url, 0, sizeof(url));
+    memset(response, 0, sizeof(response));
+    memset(response_header, 0, sizeof(response_header));
+  }
 }
