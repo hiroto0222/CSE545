@@ -1,3 +1,11 @@
 Name: Hiroto Aoyama
 ASU ID: haoyama
 Description:
+This is a minimal HTTP 1.1 web server implemented in C.
+It uses the standard socket library to create a socket and
+bind it to a specified port number that is assigned as a command-line argument.
+When a request is recieved, the server parses the request to check
+if it is a valid GET request and if so, it extracts the requested url.
+The server then sends a 200 OK response along with the contents of the executed command,
+though if not valid the server sends a 404 NOT FOUND response.
+The server also has a handler for the SIGINT (ctrl + c) which closes the open sockets and exits the program.
