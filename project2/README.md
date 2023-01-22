@@ -66,5 +66,5 @@ drwxr-xr-x 1 root root  4096 Dec 15 14:22 ..
 
 #### or from the browser
 
-<img src="./uploads/request_headers.png" alt="request_headers" />
-<img src="./uploads/response.png" alt="response" />
+<img src="./uploads/request_headers.png" alt="request_headers" style="width: 60%" />
+<img src="./uploads/response.png" alt="response" style="width: 60%" />
