@@ -87,6 +87,11 @@ void client_accept(struct sockaddr_in addr)
   {
     int len_addr = sizeof(addr);
     wsock = accept(rsock, (struct sockaddr *)&addr, &len_addr);
+    if (wsock < 0)
+    {
+      fprintf(stderr, "Error. Client connection failed\n");
+      continue;
+    }
 
     char buff[1000];
     char url[1000];
