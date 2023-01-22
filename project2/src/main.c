@@ -98,8 +98,7 @@ void client_accept(struct sockaddr_in addr)
       continue;
     }
 
-    char buff[1000];
-    char url[1000];
+    char buff[1000]; // buffer to store incoming request
 
     read(wsock, buff, 1000);
     printf("%s\n", buff);
@@ -107,8 +106,8 @@ void client_accept(struct sockaddr_in addr)
     unsigned int size = 0;
     char *response = NULL;
     char *cmd;
-    char command_result[1000];
-    char response_header[1000];
+    char command_result[1000];  // buffer to store result of command executed
+    char response_header[1000]; // buffer to store the response header sent back to client
 
     // check for 404
     if ((strstr(buff, precmd) == NULL) || (strstr(buff, postcmd) == NULL))
@@ -120,9 +119,8 @@ void client_accept(struct sockaddr_in addr)
     else
     {
       cmd = strtok(buff + 4, " ");
-      printf("cmd: %s\n", cmd);
-      // decode cmd incase hex vals are present
-      char *decoded_cmd = (char *)malloc(strlen(cmd) * sizeof(char));
+      printf("cmd recieved: %s\n", cmd);
+      char *decoded_cmd = (char *)malloc(strlen(cmd) * sizeof(char)); // decode cmd incase hex vals are present
       urldecode(decoded_cmd, cmd);
 
       // check for invalid command
@@ -131,15 +129,13 @@ void client_accept(struct sockaddr_in addr)
         strcpy(response_header, not_found_response_header);
         strcpy(command_result, "Invalid command!");
       }
+      // execute command
       else
       {
         printf("cmd to exec: %s\n", decoded_cmd);
-
-        size = strlen(ok_response_header);
-        strcat(buffer = realloc(buffer, size), ok_response_header);
         strcat(decoded_cmd, " 2>&1");
 
-        char temp_buff[1000];
+        char temp_buff[1000]; // buffer to store command_result
         FILE *file = popen(decoded_cmd + 6, "r");
         if (file == NULL)
         {
@@ -182,7 +178,6 @@ void client_accept(struct sockaddr_in addr)
 
     // clear buffers
     memset(buff, 0, sizeof(buff));
-    memset(url, 0, sizeof(url));
     memset(response, 0, sizeof(response));
     memset(command_result, 0, sizeof(command_result));
     memset(response_header, 0, sizeof(response_header));
