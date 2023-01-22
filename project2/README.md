@@ -28,7 +28,7 @@ curl localhost:3000
 
 ### Example Usage
 
-- execute `ls`
+#### execute `ls`
 
 ```sh
 # execute
@@ -44,7 +44,7 @@ normal_web_server
 submission.tar.gz
 ```
 
-- execute `ls -la`
+#### execute `ls -la`
 
 ```sh
 # execute
@@ -63,3 +63,8 @@ drwxr-xr-x 1 root root  4096 Dec 15 14:22 ..
 -rwxr-xr-x 1 root root 14576 Jan 22 06:23 normal_web_server
 -rw-r--r-- 1 root root  1770 Jan 22 02:53 submission.tar.gz
 ```
+
+#### or from the browser
+
+<img src="./uploads/request_headers.png" alt="request_headers" />
+<img src="./uploads/response.png" alt="response" />
