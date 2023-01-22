@@ -26,7 +26,7 @@ docker run --rm -it -p 3000:3000 ubuntu:web-server
 curl localhost:3000
 ```
 
-### Example
+### Example Usage
 
 - execute `ls`
 
