@@ -82,6 +82,10 @@ void client_accept(struct sockaddr_in addr)
                                     "\n";
   char *get_request = "GET";
 
+  // to check for proper req
+  char *precmd = "GET";
+  char *postcmd = "HTTP/1.1";
+
   // accept incoming connections
   while (1)
   {
@@ -100,8 +104,38 @@ void client_accept(struct sockaddr_in addr)
     printf("%s\n", buff);
 
     char *response = NULL;
+    char *cmd;
+    char command_result[1000];
     char response_header[1000];
-    strcpy(response_header, ok_response_header);
+
+    // check for 404
+    if ((strstr(buff, precmd) == NULL) || (strstr(buff, postcmd) == NULL))
+    {
+      strcpy(response_header, not_found_response_header);
+      strcpy(command_result, "Invalid request, only GET is allowed.");
+    }
+    // send 200 OK
+    else
+    {
+      cmd = strtok(buff + 4, " ");
+      printf("cmd: %s\n", cmd);
+      // decode cmd incase hex vals are present
+      char *decoded_cmd = (char *)malloc(strlen(cmd) * sizeof(char));
+      urldecode(decoded_cmd, cmd);
+
+      // check for invalid command
+      if (strstr(decoded_cmd, "/exec/") == NULL)
+      {
+        strcpy(response_header, not_found_response_header);
+        strcpy(command_result, "Invalid command");
+      }
+      else
+      {
+        printf("cmd to exec: %s\n", decoded_cmd);
+
+        strcpy(response_header, ok_response_header);
+      }
+    }
 
     response = malloc(strlen(response_header) + 10);
     strcpy(response, response_header);
@@ -118,10 +152,49 @@ void client_accept(struct sockaddr_in addr)
   }
 }
 
+/* handle ctrl + c */
 void SIGINT_handler(int signal_num)
 {
   // release port
   close(rsock);
   shutdown(rsock, 2);
   exit(0);
+}
+
+/* decode url */
+void urldecode(char *dst, const char *src)
+{
+  char a, b;
+  while (*src)
+  {
+    if ((*src == '%') &&
+        ((a = src[1]) && (b = src[2])) &&
+        (isxdigit(a) && isxdigit(b)))
+    {
+      if (a >= 'a')
+        a -= 'a' - 'A';
+      if (a >= 'A')
+        a -= ('A' - 10);
+      else
+        a -= '0';
+      if (b >= 'a')
+        b -= 'a' - 'A';
+      if (b >= 'A')
+        b -= ('A' - 10);
+      else
+        b -= '0';
+      *dst++ = 16 * a + b;
+      src += 3;
+    }
+    else if (*src == '+')
+    {
+      *dst++ = ' ';
+      src++;
+    }
+    else
+    {
+      *dst++ = *src++;
+    }
+  }
+  *dst++ = '\0';
 }
