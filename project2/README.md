@@ -2,9 +2,10 @@
 
 ### Purpose
 
-A critical part of establishing persistence on a system is to leave a “backdoor” that allows the hacker access to the system at a later date, without exploiting the same vulnerabilities (they may be fixed in the meantime). In this assignment, you will explore writing a backdoor that pretends to be a web server. A web server makes a great pretense for a backdoor because web traffic is so prevalent it does not raise alarms and ports 80 and 443 are frequently permitted through firewalls. In addition, you will become familiar with network programming in C with only the C standard library as well as reading technical specifications.
-
-Your goal is to create, in C, a minimal HTTP 1.1 server, based on RFC 2616 from scratch, without using any libraries except for the C standard library.
+This is a minimal HTTP 1.1 web server implemented in C, based on RFC 2616 from scratch, without using any libraries except for the C standard library.
+It uses the standard socket library to create a socket and bind it to a specified port number that is assigned as a command-line argument.
+When a request is recieved, the server parses the request to check if it is a valid GET request and if so, it extracts the requested url.
+The server then sends a 200 OK response along with the contents of the executed linux command, though if not valid the server sends a 404 NOT FOUND response. The server also has a handler for the SIGINT (ctrl + c) which closes the open sockets and exits the program.
 
 ### Getting Started
 
@@ -66,5 +67,5 @@ drwxr-xr-x 1 root root  4096 Dec 15 14:22 ..
 
 #### or from the browser
 
-<img src="./uploads/request_headers.png" alt="request_headers" />
-<img src="./uploads/response.png" alt="response" />
+<img src="./uploads/request_headers.png" alt="request_headers" style="width: 60%" />
+<img src="./uploads/response.png" alt="response" style="width: 60%" />
