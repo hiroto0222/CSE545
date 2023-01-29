@@ -9,17 +9,17 @@ The goal of this project is to create a “reflector” that will relaunch attac
 1. Build the image with ubuntu 18.04
 
 ```sh
-docker build . -t ubuntu:web-server
+docker build . -t ubuntu:reflector
 ```
 
-2. Run container and expose port 3000 on OS port 3000
+2. Run container
 
 ```sh
-docker run --rm -it -p 3000:3000 ubuntu:web-server
+docker run --rm --privileged -it ubuntu:reflector
 ```
 
-3. Test container
+3. Test
 
 ```sh
-curl localhost:3000
+root@4ec440285fa4:/usr/src# ./test_reflector.sh
 ```
