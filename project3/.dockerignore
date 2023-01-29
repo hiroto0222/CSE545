@@ -1,4 +1,5 @@
 *tar.gz
+src/reflector
 *.out
 ./create_submission.sh
 .gitignore
