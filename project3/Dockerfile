@@ -1,13 +1,12 @@
 FROM ubuntu:18.04
 
-RUN apt-get update && apt-get --no-install-recommends install -y build-essential=12.4ubuntu1 && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y python3 python3-pip \ 
+  && apt-get --no-install-recommends install -y build-essential=12.4ubuntu1 && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install scapy
 
 COPY ./src /usr/src
 
 WORKDIR /usr/src
 
-ENV PORT "3000"
-
-RUN make
-
-CMD ./normal_web_server $PORT
+RUN ./test_reflector.sh
