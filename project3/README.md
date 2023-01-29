@@ -2,7 +2,13 @@
 
 ### Purpose
 
-The goal of this project is to create a “reflector” that will relaunch attacks sent to a given IP address and ethernet address to the IP address that sent the attack. This acts as a mirror, such that when an adversary is port scanning a network, they will actually be port scanning themselves. When they launch an exploit at the reflector, the attack will be reflected back at them. To accomplish this task, you will improve your skills at network programming: creating raw packets, implementing ARP, and other low-level networking skills.
+This is a Python script that uses the Scapy library to perform a network attack called ARP spoofing. The script takes in several command line arguments, such as the network interface to use, the victim's IP and Ethernet addresses, and the reflector's IP and Ethernet addresses. 
+
+The script defines a function called packet_sniffer() that uses Scapy's sniff() function to listen for all packets on the specified network interface and passes each packet to a callback function packet_callback().
+
+The packet_callback() function first checks if the packet is an ARP packet by checking if the ARP layer is present in the packet. If it is, it checks whether the packet is targeted at the victim's IP or the reflector's IP. If it is targeted at the victim's IP, the script creates a new ARP packet with the source IP set to the victim's IP and the destination IP set to the packet's source IP. It also sets the source and destination Ethernet addresses accordingly. Then, it sends the packet. The same process is repeated if the packet is targeted at the reflector's IP.
+
+If the packet is not an ARP packet, the script checks if the IP layer is present in the packet. If it is, it checks whether the packet is targeted at the victim's IP or the reflector's IP. If it is targeted at the victim's IP, the script creates a new IP packet with the source IP set to the reflector's IP and the destination IP set to the packet's source IP. Then, it sends the packet. The same process is repeated if the packet is targeted at the reflector's IP.
 
 ### Getting Started
 
