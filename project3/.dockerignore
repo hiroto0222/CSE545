@@ -1,0 +1,6 @@
+*tar.gz
+*.out
+./create_submission.sh
+.gitignore
+README*
+.DS_Store
