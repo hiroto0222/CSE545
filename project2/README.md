@@ -1,4 +1,4 @@
-# Project 2: Backdoor Web Server Assignment
+# Project 2: Backdoor Web Server
 
 ### Purpose
 
